@@ -10,6 +10,8 @@ from .models import TransData
 
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
+from rest_framework.permissions import IsAuthenticated
+
 # Create your views here.
 
 # init translation model
@@ -27,41 +29,19 @@ def translator(source, source_lang, target_lang):
 
     return output
     
-
-
-
 class TransaiSerializers(serializers.ModelSerializer):
     class Meta:
         model = TransData
         fields = "__all__"
 
-# # defin api
-# class TranslateView(APIView):
-
-#     def post(self, request):
-#         source_text = request.data.get('source_text')
-#         source_lang = request.data.get('source_lang', 'zho_Hans')
-#         target_lang = request.data.get('target_lang', 'eng_Latn')
-        
-
-#         if not source_text:
-#             return Response({'error':'Source text is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-#         translated =  translator(source_text, source_lang, target_lang)
-   
-#         return Response({
-
-#             'source_text': source_text,
-#             'translated_text': translated,
-            
-#         }, status=status.HTTP_201_CREATED)
-
-
-
 # defin api
 class TranslateView(GenericAPIView):
     queryset = TransData.objects.all()
     serializer_class = TransaiSerializers
+
+    # only authenticated user can access
+    permission_classes = [IsAuthenticated]
+
 
     def get(self, request):
 
