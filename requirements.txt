@@ -1,0 +1,7 @@
+Django==4.2
+djangorestframework==3.14.0
+transformers==4.31.0
+torch==2.0.1
+django-cors-headers==4.4.0
+djangorestframework-simplejwt==5.3.1
+langdetect==1.0.9

@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -56,6 +54,7 @@ class TranslateView(GenericAPIView):
 
         
         source_lang_input = detect_lang(source_text_input)
+
         print('detecting input lang...')
         print('detecting input lang...')
         print('detecting input lang...')
