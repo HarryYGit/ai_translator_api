@@ -10,7 +10,10 @@ from .models import TransData
 
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 
@@ -34,7 +37,15 @@ class TransaiSerializers(serializers.ModelSerializer):
         model = TransData
         fields = "__all__"
 
+
+class TestConnection(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        message = 'connection success'
+        return Response(message)
+
 # defin api
+@method_decorator(csrf_exempt, name='dispatch')
 class TranslateView(GenericAPIView):
     queryset = TransData.objects.all()
     serializer_class = TransaiSerializers
@@ -49,7 +60,7 @@ class TranslateView(GenericAPIView):
 
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
 
         serializer = self.get_serializer(data = request.data)
 
@@ -60,21 +71,19 @@ class TranslateView(GenericAPIView):
 
                 if not source_text_input:
                     return Response({'error':'Source text is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
+            
                 translated =  translator(source_text_input, source_lang_input, target_lang_input)
 
                 trans_data = TransData.objects.create(
-                     
-                     source_text = source_text_input,
-                     source_lang = source_lang_input,
-                     target_lang = target_lang_input,
-                     trans_text = translated
+                        
+                    source_text = source_text_input,
+                    source_lang = source_lang_input,
+                    target_lang = target_lang_input,
+                    trans_text = translated
                 )
 
                 response_serializer = self.get_serializer(trans_data)
                 return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-                
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

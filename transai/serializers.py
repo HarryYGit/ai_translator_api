@@ -19,10 +19,10 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])  # Securely hash the password
         user.save()
         return user
+    
 
-
-# Serializer for User Login
-class LoginSerializer(serializers.Serializer):
+# # Serializer for User Login
+class ObtainTokenSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
