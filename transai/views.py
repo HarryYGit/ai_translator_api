@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .detector import detect_lang
+from .convert_target_lang import convert_to_accept
 
 # Create your views here.
 tokenizer_nllb = AutoTokenizer.from_pretrained('facebook/nllb-200-distilled-600M')
@@ -36,22 +37,41 @@ class TranslateView(GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-                
-            source_text_input = request.data.get('source_text')
+
+        user_lang = request.META.get('HTTP_ACCEPT_LANGUAGE')
+
+        if user_lang:
+            target_lang_from_request = user_lang.split(",")[0]
+            print('Language header detected: ', target_lang_from_request)
+            target_lang_input = convert_to_accept(target_lang_from_request)
+            print('convert request lang to accept format: ', target_lang_input)
+
+        else:
+            print("language header not found")
             target_lang_input = request.data.get('target_lang', 'eng_Latn')
+            print('target_lang set to input: ', target_lang_input)
+        
+        source_text_input = request.data.get('source_text')
+        # target_lang_input = request.data.get('target_lang', 'eng_Latn')
 
-            source_lang_input = detect_lang(source_text_input)
-            # source_lang_input = request.data.get('source_lang', 'zho_Hans')
+        
+        source_lang_input = detect_lang(source_text_input)
+        print('detecting input lang...')
+        print('detecting input lang...')
+        print('detecting input lang...')
+        print('input lang: ', source_lang_input)
+        # source_lang_input = request.data.get('source_lang', 'zho_Hans')
 
-            if not source_text_input:
-                return Response({'error':'Source text is required'}, status=status.HTTP_400_BAD_REQUEST)
+        if not source_text_input:
+            return Response({'error':'Source text is required'}, status=status.HTTP_400_BAD_REQUEST)
             
-            translated =  translator(source_text_input, source_lang_input, target_lang_input)
+        translated =  translator(source_text_input, source_lang_input, target_lang_input)
+        print('translating result: ', translated)
 
-            return Response({
-                "source_text" : source_text_input,
-                "source_lang" : source_lang_input,
-                "target_lang" : target_lang_input,
-                "trans_text" : translated
+        return Response({
+            "source_text" : source_text_input,
+            "source_lang" : source_lang_input,
+            "target_lang" : target_lang_input,
+            "trans_text" : translated
                      
-            }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_201_CREATED)    
