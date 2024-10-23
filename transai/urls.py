@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import TranslateView
-# from .auth_views import RegisterView, LoginView
 from .auth_views import RegisterView, ObtainTokenView
 from rest_framework_simplejwt.views import TokenRefreshView
 
