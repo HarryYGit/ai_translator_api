@@ -27,6 +27,29 @@ class RegisterView(GenericAPIView):
                 status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RegisterAdminView(GenericAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save(is_staff=True, is_superuser = True) # save user as admin 
+
+            # create token for registered user to using Simple JWT
+            refersh = RefreshToken.for_user(user)
+            access = refersh.access_token
+
+            return Response({
+                "user": UserSerializer(user).data,
+                "refresh": str(refersh),
+                "access": str(access),
+                "message" : "Admin User registered successfully"
+                }, 
+                status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ObtainTokenView(GenericAPIView):
     serializer_class = ObtainTokenSerializer
     permission_classes = [AllowAny]

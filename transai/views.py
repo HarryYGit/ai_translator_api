@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .detector import detect_lang
@@ -74,3 +74,13 @@ class TranslateView(GenericAPIView):
             "trans_text" : translated
                      
         }, status=status.HTTP_201_CREATED)    
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class AdminView(GenericAPIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, *args, **kwargs):
+        return Response({
+            "message" : "hi admin user"
+        }, status=status.HTTP_200_OK)

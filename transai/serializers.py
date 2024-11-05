@@ -6,15 +6,18 @@ from django.contrib.auth import authenticate
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'password')
+        fields = ('username', 'password', 'is_staff', 'is_superuser')
         extra_kwargs = {
             'password': {'write_only': True},  # Password won't be readable in the response
-          
+            'is_staff': {'default': False},
+            'is_superuser': {'default': False},
         }
 
     def create(self, validated_data):
         user = User(
-            username=validated_data['username']
+            username=validated_data['username'],
+            is_staff=validated_data.get('is_staff', False),  # Handle is_staff
+            is_superuser=validated_data.get('is_superuser', False) 
         )
         user.set_password(validated_data['password'])  # Securely hash the password
         user.save()
