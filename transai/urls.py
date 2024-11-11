@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TranslateView, AdminView
+from .views import TranslateView, AdminView, AudioTextView
 from .auth_views import RegisterView, ObtainTokenView, RegisterAdminView
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -16,4 +16,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path('translate/admin', AdminView.as_view(), name='admin'),
+
+    path('translate/audio', AudioTextView.as_view(), name='admin'),
 ]

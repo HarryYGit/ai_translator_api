@@ -86,6 +86,7 @@ class TranslateView(GenericAPIView):
         print('detecting input lang...')
         print('detecting input lang...')
         print('detecting input lang...')
+
         print('input lang: ', source_lang_input)
         # source_lang_input = request.data.get('source_lang', 'zho_Hans')
 
@@ -113,4 +114,39 @@ class AdminView(GenericAPIView):
             "output" : output
         }, status=status.HTTP_200_OK)
     
+@method_decorator(csrf_exempt, name='dispatch')
+class AudioTextView(GenericAPIView):
+    # only authenticated user can access
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+
+        # Check if the request contains an audio file
+        audio_file = request.FILES.get('audio')  # Assuming the field name is 'audio'
+
+        if audio_file:
+            # If an audio file is provided, use the AudioDetector class to get transcription
+            print('Audio file detected, transcribing...')
+            audio_detector = AudioDetector()
+
+            audio_text = audio_detector.transcribe_audio(audio_file)
+
+            audio_lang = detect_lang(audio_text)
+
+            # convert_trans = translator(audio_text, audio_lang, audio_lang)
+
+            print(f"Transcription from audio: {audio_text}")
+            print(f"Language of audio: {audio_lang}")
+
+            return Response({
+            "transcription" : audio_text,
+            "audio_text_lang" : audio_lang
+
+            }, status=status.HTTP_201_CREATED)  
+        
+        else:
+            return Response({'error':'Source audio is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
