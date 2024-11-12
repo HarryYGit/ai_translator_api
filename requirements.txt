@@ -5,3 +5,4 @@ torch==2.5.0
 django-cors-headers==4.4.0
 djangorestframework-simplejwt==5.3.1
 langdetect==1.0.9
+librosa==0.10.2.post1
