@@ -83,14 +83,17 @@ docker-compose -f docker-compose.yml up
 
 1. **Translating Text:**
    To translate text, send a `POST` request to `/api/translate/` with the necessary payload.
+   
+2. **Mutil Language Audio Detect:**
+   To detect audio, send a `POST` request and auiod file to `/api/translate/` with the necessary payload.
 
-2. **Registering a User:**
+3. **Registering a User:**
    Send a `POST` request to `/api/auth/register/` with the user's information (username, password) to register and get refresh token and access token.
 
-3. **Obtaining a Token:**
+4. **Obtaining a Token:**
    Authenticate a user by sending a `POST` request to `/api/auth/obtaintoken/` with the username and password. This will return a JWT token.
 
-4. **Refreshing the Token:**
+5. **Refreshing the Token:**
    Use a valid refresh token to get a new JWT by sending a `POST` request to `/api/token/refresh/`.
 
 ## Example Requests
